@@ -12,12 +12,11 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+# "Least privilege": the role's trust policy is now built from its inline policy, and the
+# inline policy is scoped to this cluster's ARN. Together they form a dependency cycle.
 resource "aws_iam_role" "checkout" {
-  name = "checkout-cluster"
-  assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [{ Effect = "Allow", Action = "sts:AssumeRole", Principal = { Service = "eks.amazonaws.com" } }]
-  })
+  name               = "checkout-cluster"
+  assume_role_policy = aws_iam_role_policy.checkout.policy
 }
 
 resource "aws_eks_cluster" "checkout" {
@@ -31,5 +30,5 @@ resource "aws_eks_cluster" "checkout" {
 resource "aws_iam_role_policy" "checkout" {
   name   = "checkout-access"
   role   = aws_iam_role.checkout.id
-  policy = jsonencode({ Version = "2012-10-17", Statement = [{ Effect = "Allow", Action = "eks:DescribeCluster", Resource = "*" }] })
+  policy = jsonencode({ Version = "2012-10-17", Statement = [{ Effect = "Allow", Action = "eks:DescribeCluster", Resource = aws_eks_cluster.checkout.arn }] })
 }
