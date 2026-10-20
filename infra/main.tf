@@ -24,6 +24,7 @@ resource "aws_eks_cluster" "checkout" {
   role_arn = aws_iam_role.checkout.arn
   tags = {
     team = "payments"
+    service = "checkout"
   }
   vpc_config {
     subnet_ids = ["subnet-0a1b2c3d4e5f60718", "subnet-0f1e2d3c4b5a69788"]
