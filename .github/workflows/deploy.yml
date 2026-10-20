@@ -1,0 +1,20 @@
+name: deploy
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  deploy:
+    name: deploy (OpenTofu)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+      - name: tofu init
+        run: tofu init -backend=false -input=false -no-color
+      - name: tofu validate
+        run: tofu validate -no-color
+      - name: tofu graph (dependency check)
+        run: tofu graph -type=plan > /dev/null
