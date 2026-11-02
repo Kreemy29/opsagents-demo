@@ -12,11 +12,14 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-# "Least privilege": the role's trust policy is now built from its inline policy, and the
-# inline policy is scoped to this cluster's ARN. Together they form a dependency cycle.
+# The trust policy only says who may assume the role (EKS). What the role may do stays in
+# its inline policy, which is scoped to this cluster's ARN.
 resource "aws_iam_role" "checkout" {
-  name               = "checkout-cluster"
-  assume_role_policy = aws_iam_role_policy.checkout.policy
+  name = "checkout-cluster"
+  assume_role_policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = [{ Effect = "Allow", Principal = { Service = "eks.amazonaws.com" }, Action = "sts:AssumeRole" }]
+  })
 }
 
 resource "aws_eks_cluster" "checkout" {
