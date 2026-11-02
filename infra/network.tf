@@ -3,7 +3,7 @@
 resource "aws_security_group" "web" {
   name        = "orders-web"
   description = "Orders web tier"
-  tags        = { service = "orders", tier = "web" }
+  tags        = { service = "orders", tier = "web", owner = "payments" }
 
   ingress {
     description     = "Callbacks from the API tier"
@@ -17,7 +17,7 @@ resource "aws_security_group" "web" {
 resource "aws_security_group" "api" {
   name        = "orders-api"
   description = "Orders API tier"
-  tags        = { service = "orders", tier = "api" }
+  tags        = { service = "orders", tier = "api", owner = "payments" }
 
   ingress {
     description     = "Requests from the web tier"
